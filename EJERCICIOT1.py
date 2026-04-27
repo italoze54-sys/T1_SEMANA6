@@ -13,12 +13,11 @@ class Puesto_de_Trabajo():
         return f"{self.codigo} - {self.descripcion} - {self.area_solicitante} - {self.plazas_requeridas} - S/({self.sueldo})"
 
 
-#•	1 – AgregaPuesto(): Registrar un nuevo Puesto de trabajo, para lo cual buscará linealmente tal que debe validar que no haya otro Puesto de trabajo con el mismo código, descripcion o areaSolicitante e insertará el nuevo Puesto de trabajo. Valide que los datos string tengan por lo menos 3 letras y los datos numéricos sean mayor a cero.
 def AgregarPuesto(lista, puesto):
-    if len(puesto.codigo) < 3 or len(puesto.descripcion) < 3 or len(puesto.area_solicitante) < 3:
+    if (len(puesto.descripcion) < 3 or len(puesto.area_solicitante) < 3):
         print("Los campos de texto deben tener al menos 3 caracteres.")
         return False
-    if puesto.plazas_requeridas <= 0 or puesto.sueldo <= 0:
+    elif puesto.plazas_requeridas <= 0 or puesto.sueldo <= 0:
         print("Los campos numéricos deben ser mayores a cero.")
         return False
     
@@ -33,33 +32,63 @@ def AgregarPuesto(lista, puesto):
 
 def MostrarPuestos(lista):
     for p in lista:
-        print(p)
-        
+        print(p)      
         
 
-#•	3 – BorraPuesto(): Pedirá un codigo, luego ordenará por método de burbuja usando el código de más a menos y mediante búsqueda lineal buscará el Puesto de trabajo cuyos codigos coincidan y los eliminará de la lista.
 def OrdenarBurbuja(lista):
     n = len(lista)
-    for i in range(n-1):
+    for i in range(n):
         for j in range(0, n-i-1):
             if lista[j].codigo < lista[j+1].codigo:
                 lista[j], lista[j+1] = lista[j+1], lista[j]
     print(lista)
 
-
-#•	4 – BuscaSueldo(): Ordenará la lista por sueldo usando método de inserción de más a menos. Luego preguntará un sueldo a buscar, y usando la búsqueda binaria encontrará todos los Puesto de trabajo con ese sueldo.
 def OrdenarInsercion(lista):
     n = len(lista)
     for i in range(1, n):
         key = lista[i]
-        j = i-1
-        while j >= 0 and key.sueldo > lista[j].sueldo:
+        j = i - 1
+        while j >= 0 and lista[j].sueldo < key.sueldo:
             lista[j + 1] = lista[j]
             j -= 1
         lista[j + 1] = key
     print(lista)
 
-#•	5 – PuestosAContratar(): Preguntará cuánto dinero en total se invertirá en salarios de puestos nuevos y mostrará la lista de puestos que podrían contratarse hasta cubrir el monto. Nótese que cada puesto tiene asociada una cantidad plazasRequeridas y, multiplicado por el sueldo de cada plaza, se obtiene el total requerido en dinero para ese puesto de trabajo. Ordene la lista de Puesto de trabajo con el método de selección según de más a menos según el total requerido en dinero y muestre los puestos que se cubrirán hasta cubrir el monto que se invertirá en salarios.
+def BuscarSueldo(lista, sueldo):
+    izq = 0
+    der = len(lista) - 1
+    
+    while izq <= der:
+        mid = (izq + der) // 2
+        
+        if lista[mid].sueldo == sueldo:
+            print("Encontrados:")
+            
+            # mostrar el del medio
+            print(lista[mid])
+            
+            # izquierda
+            i = mid - 1
+            while i >= 0 and lista[i].sueldo == sueldo:
+                print(lista[i])
+                i -= 1
+            
+            # derecha
+            i = mid + 1
+            while i < len(lista) and lista[i].sueldo == sueldo:
+                print(lista[i])
+                i += 1
+            
+            return
+        
+        elif lista[mid].sueldo < sueldo:
+            der = mid - 1   # porque está de mayor a menor
+        else:
+            izq = mid + 1
+    
+    print("No se encontró ese sueldo")
+
+
 def OrdenarSeleccionTotal(lista):
     n = len(lista)
     for manoizq in range(n-1):
@@ -73,11 +102,26 @@ def OrdenarSeleccionTotal(lista):
     
     print(lista)
     
+def PuestosAContratar(lista, monto):
+    total_usado = 0
+    
+    print("Puestos que se pueden contratar:")
+    
+    for p in lista:
+        costo = p.plazas_requeridas * p.sueldo
+        
+        if total_usado + costo <= monto:
+            print(p)
+            total_usado += costo
+    
+    print("Total usado:", total_usado)
+    
 lista = []
 print("================= MENÚ =================")
 
 while True:
-    opcion = int(input("1. Agregar Puesto de Trabajo\n2. Mostrar todos los puestos\n3. Borrar puesto\n4. Buscar sueldo\n5. Puestos a contratar\nElige una opción: "))
+    opcion = int(input("1. Agregar Puesto de Trabajo\n2. Mostrar todos los puestos\n3. Borrar puesto\n4. Buscar sueldo\n5. Puestos a contratar\n6. Salir\nElige una opción:"))
+    
     if(opcion == 1):
         codigo = input("Ingrese el codigo del puesto: ")
         descripcion = input("Ingrese la descripcion del puesto: ")
@@ -90,8 +134,10 @@ while True:
             print("Puesto agregado exitosamente.")
         else:
             print("El código del puesto ya existe. No se pudo agregar.")
+    
     elif (opcion == 2):
         MostrarPuestos(lista)
+
     elif (opcion == 3):        
         print("Ordenado de mayor a menor por código: ")
         OrdenarBurbuja(lista)
@@ -101,16 +147,19 @@ while True:
                 del lista[idx] 
                 print("Puesto eliminado exitosamente.")
                 break
+
     elif (opcion == 4):
         print("Ordenado de mayor a menor por sueldo: ")
         OrdenarInsercion(lista)
         sueldo_buscar = float(input("Ingrese el sueldo a buscar: "))
-        # Aquí se implementaría la búsqueda binaria para encontrar los puestos con el sueldo especificado
+        BuscarSueldo(lista, sueldo_buscar)
+    
     elif (opcion == 5):
         print("Ordenado de mayor a menor por total requerido en dinero: ")
         OrdenarSeleccionTotal(lista)
         monto_invertir = float(input("Ingrese el monto total a invertir en salarios: "))
-        # Aquí se mostrarían los puestos que se podrían contratar hasta cubrir el monto especificado
+        PuestosAContratar(lista, monto_invertir)
+       
     elif(opcion == 6):
         print("Saliendo del programa.")
         break
