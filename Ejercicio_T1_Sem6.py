@@ -71,7 +71,6 @@ def BuscarSueldo(lista, sueldo):
                 print(lista[i])
                 i -= 1
             
-            # derecha
             i = mid + 1
             while i < len(lista) and lista[i].sueldo == sueldo:
                 print(lista[i])
