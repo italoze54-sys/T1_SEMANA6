@@ -64,10 +64,8 @@ def BuscarSueldo(lista, sueldo):
         if lista[mid].sueldo == sueldo:
             print("Encontrados:")
             
-            # mostrar el del medio
             print(lista[mid])
             
-            # izquierda
             i = mid - 1
             while i >= 0 and lista[i].sueldo == sueldo:
                 print(lista[i])
@@ -82,7 +80,7 @@ def BuscarSueldo(lista, sueldo):
             return
         
         elif lista[mid].sueldo < sueldo:
-            der = mid - 1   # porque está de mayor a menor
+            der = mid - 1  
         else:
             izq = mid + 1
     
